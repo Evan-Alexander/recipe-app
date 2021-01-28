@@ -13,6 +13,32 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
+  update(data) {
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+    // Creates a complete virtual DOM node, allowing us to compare a new vs. old DOM and changing only the bits that need to be changed
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const currElements = Array.from(this._parentElement.querySelectorAll('*'));
+
+    newElements.forEach((newEl, i) => {
+      const curEl = currElements[i];
+      // only updating the TEXT
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+      // Updating the attribute values
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
+  }
+
   _clear() {
     this._parentElement.innerHTML = '';
   }
