@@ -1,4 +1,5 @@
 import { TIMEOUT_SEC } from './config';
+import Fraction from 'fraction.js';
 
 const timeout = function (s) {
   return new Promise(function (_, reject) {
@@ -62,14 +63,21 @@ export const AJAX = async function (url, uploadData = undefined) {
 //   }
 // };
 
-export const fractions = function (string) {
-  // ${ing.quantity ? new Fraction(ing.quantity).toString() : ''}
-  const input = new Fraction(string).toString();
+// export const fractions = function (string) {
+//   // ${ing.quantity ? new Fraction(ing.quantity).toString() : ''}
+//   const input = new Fraction(string).toString();
 
-  let output = input.includes('33/100')
-    ? input.split('33/100').join('1/3')
-    : input;
+//   let output = input.includes('33/100')
+//     ? input.split('33/100').join('1/3')
+//     : input;
 
-  const nanCheck = output.includes('NaN') ? '' : output;
-  return nanCheck;
+//   const nanCheck = output.includes('NaN') ? '' : output;
+//   return nanCheck;
+// };
+export const fractions = quantity => {
+  if (quantity) {
+    const num = new Fraction(quantity).simplify(0.00001);
+    return num.toFraction(true);
+  }
+  return '?';
 };
